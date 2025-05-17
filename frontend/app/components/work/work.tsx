@@ -20,46 +20,51 @@ const companies = [
 export default function AutoScrollCarousel() {
   const plugin = useRef(
     Autoplay({
-      delay: 100,
+      delay: 1800, // Increased delay for slower scroll
       stopOnInteraction: false,
     })
   );
 
   return (
-    <div className="w-full px-4 py-8 max-w-7xl mx-auto">
-      <Carousel
-        opts={{
-          align: "center",
-          loop: true,
-          duration: 200, // Smoother transition
-          dragFree: true,
-        }}
-        plugins={[plugin.current]}
-        className="w-full overflow-hidden"
-      >
-        <CarouselContent className="-ml-4">
-          {[...companies, ...companies].map((logo, index) => (
-            <CarouselItem
-              key={index}
-              className="basis-1/2 md:basis-1/3 pl-4"
-              style={{ minWidth: "160px" }} // Consistent minimum width
-            >
-              <div className="p-1">
-                <div className="flex aspect-video items-center justify-center p-4">
-                  <Image
-                    src={logo}
-                    alt="Company logo"
-                    width={120} // Reduced size for desktop
-                    height={80}
-                    className="object-contain w-full h-full transition-all duration-300 hover:scale-105"
-                    priority={index < 3} // Lazy load after first few
-                  />
+    <div className="mt-10">
+      <h1 className="text-2xl font-bold text-center text-[var(--orange-color)] md:text-5xl">
+        Trusted by Companies
+      </h1>
+      <div className="w-full px-4 py-8 max-w-7xl mx-auto">
+        <Carousel
+          opts={{
+            align: "center",
+            loop: true,
+            duration: 1500, // Slower transition speed
+            dragFree: true,
+          }}
+          plugins={[plugin.current]}
+          className="w-full overflow-hidden"
+        >
+          <CarouselContent className="-ml-4">
+            {[...companies, ...companies].map((logo, index) => (
+              <CarouselItem
+                key={index}
+                className="basis-1/2 md:basis-1/3 pl-4"
+                style={{ minWidth: "160px" }} // Consistent minimum width
+              >
+                <div className="p-1">
+                  <div className="flex aspect-video items-center justify-center p-4">
+                    <Image
+                      src={logo}
+                      alt="Company logo"
+                      width={120}
+                      height={80}
+                      className="object-contain w-full h-full transition-all duration-300 hover:scale-105"
+                      priority={index < 3}
+                    />
+                  </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </div>
     </div>
   );
 }
