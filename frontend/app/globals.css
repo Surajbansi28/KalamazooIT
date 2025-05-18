@@ -8,7 +8,7 @@
   --light-orange: #f18a02;
   --mix-orange: #ec6a11;
 }
-
+  
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

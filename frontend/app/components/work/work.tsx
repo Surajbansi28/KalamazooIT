@@ -8,16 +8,9 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import companies from "@/app/data/companies";
 
-const companies = [
-  "/heartland-logo.svg",
-  "/ascendium.jpg",
-  "/self-funding.png",
-  "/wiscosin.png",
-  "/Goodwill-Logo-2.svg",
-];
-
-export default function AutoScrollCarousel() {
+export default function Work() {
   const plugin = useRef(
     Autoplay({
       delay: 1800, // Increased delay for slower scroll
