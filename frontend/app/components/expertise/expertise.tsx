@@ -7,16 +7,16 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 
 const expertiseData = [
   {
-    number: "23",
+    number: 23,
     text: "Years experience offering managed IT and security solutions",
   },
-  { number: "27", text: "Regions supported by our team" },
+  { number: 27, text: "Regions supported by our team" },
   { number: "98%", text: "Average customer satisfaction score" },
-  { number: "51", text: "Average employee count of our clients" },
+  { number: 51, text: "Average employee count of our clients" },
 ];
 
 const cardVariants = {
@@ -33,9 +33,63 @@ const cardVariants = {
   }),
 };
 
+const AnimatedCounter = ({
+  targetNumber,
+  shouldAnimate,
+}: {
+  targetNumber: number | string;
+  shouldAnimate: boolean;
+}) => {
+  const [count, setCount] = useState(0);
+  const isPercentage =
+    typeof targetNumber === "string" && targetNumber.includes("%");
+  const numericValue = isPercentage
+    ? parseInt(targetNumber as string)
+    : (targetNumber as number);
+
+  useEffect(() => {
+    if (!shouldAnimate || typeof numericValue !== "number") return;
+
+    const duration = 2000; // 2 seconds for the entire animation
+    const startTime = performance.now();
+
+    const animateCount = (currentTime: number) => {
+      const elapsedTime = currentTime - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+      const currentCount = Math.floor(progress * numericValue);
+
+      setCount(currentCount);
+
+      if (progress < 1) {
+        requestAnimationFrame(animateCount);
+      }
+    };
+
+    requestAnimationFrame(animateCount);
+  }, [shouldAnimate, numericValue]);
+
+  return (
+    <motion.span
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="text-5xl font-bold text-[var(--mix-orange)] mb-4"
+    >
+      {isPercentage ? `${count}%` : count}
+    </motion.span>
+  );
+};
+
 export default function Expertise() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { margin: "0px 0px -100px 0px" }); // Removed 'once: true'
+  const isInView = useInView(ref, { margin: "0px 0px -100px 0px" });
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    if (isInView && !hasAnimated) {
+      setHasAnimated(true);
+    }
+  }, [isInView, hasAnimated]);
 
   return (
     <section className="w-full py-20 bg-background">
@@ -59,19 +113,13 @@ export default function Expertise() {
               animate={isInView ? "visible" : "hidden"}
               whileHover={{ scale: 1.03 }}
               className="h-full"
-              onAnimationComplete={() => {
-                // Reset animation state when out of view
-                if (!isInView) {
-                  // Force re-render by toggling visibility
-                  setTimeout(() => {}, 0);
-                }
-              }}
             >
               <Card className="h-full transition-all hover:shadow-lg">
                 <CardHeader className="h-full flex flex-col items-center justify-center text-center p-6">
-                  <CardTitle className="text-5xl font-bold text-[var(--mix-orange)] mb-4">
-                    {item.number}
-                  </CardTitle>
+                  <AnimatedCounter
+                    targetNumber={item.number}
+                    shouldAnimate={hasAnimated && isInView}
+                  />
                   <motion.div
                     className="w-12 h-1 bg-primary rounded-full mb-4"
                     layoutId={`underline-${index}`}

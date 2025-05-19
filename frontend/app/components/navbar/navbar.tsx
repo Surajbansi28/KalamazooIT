@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [visibleLetters, setVisibleLetters] = useState<number>(0);
@@ -26,12 +27,50 @@ const Navbar = () => {
     "Contact",
   ];
 
+  // Variants for Framer Motion
+  const navItemVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.15,
+        type: "spring",
+        stiffness: 120,
+      },
+    }),
+  };
+
+  const mobileMenuVariants = {
+    hidden: { opacity: 0, x: -200 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+  };
+
+  // Hamburger Animation Variants
+  const topBar = {
+    open: { rotate: 45, y: 6 },
+    closed: { rotate: 0, y: 0 },
+  };
+
+  const middleBar = {
+    open: { opacity: 0 },
+    closed: { opacity: 1 },
+  };
+
+  const bottomBar = {
+    open: { rotate: -45, y: -6 },
+    closed: { rotate: 0, y: 0 },
+  };
+
   return (
     <nav>
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         {/* Logo and Animated Text */}
-        <Link href="/" className="flex items-center space-x-1">
-          <div className="relative flex items-center">
+        <Link href="/" className="flex items-center space-x-1 group">
+          <motion.div
+            className="relative flex items-center group-hover:scale-110 transition-transform duration-300"
+            whileHover={{ rotate: [0, -5, 5, -5, 0] }}
+          >
             <Image
               src="/Kalamazoo-Logo.jpeg"
               alt="Kalamazoo Logo"
@@ -39,89 +78,117 @@ const Navbar = () => {
               height={70}
               className="object-contain"
             />
-            <span
+            <motion.span
               className="-translate-x-5 font-semibold whitespace-nowrap flex text-lg md:text-xl"
               style={{ color: "var(--orange-color)" }}
             >
               {text.split("").map((char, index) => (
-                <span
+                <motion.span
                   key={index}
                   className={`transition-opacity duration-500 ${
                     index < visibleLetters ? "opacity-100" : "opacity-0"
                   }`}
+                  whileHover={{ y: -5, transition: { yoyo: Infinity } }}
                 >
                   {char}
-                </span>
+                </motion.span>
               ))}
-            </span>
-          </div>
+            </motion.span>
+          </motion.div>
         </Link>
 
         {/* Hamburger Menu Button */}
         <button
           onClick={toggleMenu}
           type="button"
-          className="inline-flex items-center p-2 w-10 h-10 justify-center rounded-lg md:hidden hover:bg-[var(--light-orange)] focus:outline-none focus:ring-2 focus:ring-[var(--light-orange)]"
+          className="inline-flex flex-col items-center justify-center p-2 w-10 h-10 rounded-lg md:hidden hover:bg-[var(--light-orange)] focus:outline-none focus:ring-2 focus:ring-[var(--light-orange)] transition-all duration-300"
           aria-controls="navbar-cta"
           aria-expanded={isMenuOpen}
         >
-          <span className="sr-only">Open main menu</span>
-          <svg
-            className="w-5 h-5"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 17 14"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M1 1h15M1 7h15M1 13h15"
-            />
-          </svg>
+          <motion.span
+            className="block w-5 h-[2px] bg-[var(--font-color-light)]"
+            animate={isMenuOpen ? "open" : "closed"}
+            variants={topBar}
+          />
+          <motion.span
+            className="block w-5 h-[2px] bg-[var(--font-color-light)] my-[4px]"
+            animate={isMenuOpen ? "open" : "closed"}
+            variants={middleBar}
+          />
+          <motion.span
+            className="block w-5 h-[2px] bg-[var(--font-color-light)]"
+            animate={isMenuOpen ? "open" : "closed"}
+            variants={bottomBar}
+          />
         </button>
 
         {/* Navigation Links */}
-        <div
-          className={`items-center justify-between w-full md:flex md:w-auto md:order-1 ${
-            isMenuOpen ? "" : "hidden"
-          }`}
-          id="navbar-cta"
-        >
-          <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0">
-            {navLinks.map((link, idx) => (
-              <li key={idx}>
-                <Link
-                  href="#"
-                  className="block py-2 px-3 md:p-0 text-sm md:text-base rounded-sm transition-all duration-300 text-[var(--font-color-light)] hover:text-[var(--light-orange)]"
-                >
-                  {link}
-                </Link>
-              </li>
-            ))}
-            {/* Login Button moved inside dropdown */}
-            <li className="mt-2 md:hidden">
-              <button
-                type="button"
-                className="w-full text-white bg-[var(--orange-color)] hover:bg-[var(--light-orange)] focus:ring-4 focus:outline-none font-medium rounded-lg text-xs px-4 py-2 text-center"
+        <div className="hidden md:flex md:space-x-8 md:order-1">
+          {navLinks.map((link, idx) => (
+            <motion.div
+              key={idx}
+              custom={idx}
+              initial="hidden"
+              animate="visible"
+              variants={navItemVariants}
+            >
+              <Link
+                href="#"
+                className="block text-sm md:text-base transition-all duration-300 text-[var(--font-color-light)] hover:text-[var(--light-orange)]"
               >
-                LOGIN
-              </button>
-            </li>
-          </ul>
+                {link}
+              </Link>
+            </motion.div>
+          ))}
         </div>
 
+        {/* Mobile Navigation Links */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={mobileMenuVariants}
+              className="w-full md:hidden mt-4"
+            >
+              <ul className="flex flex-col space-y-2 bg-white p-4 rounded-lg shadow-md">
+                {navLinks.map((link, idx) => (
+                  <li key={idx}>
+                    <Link
+                      href="#"
+                      className="block text-sm md:text-base text-[var(--font-color-light)] hover:text-[var(--light-orange)]"
+                    >
+                      {link}
+                    </Link>
+                  </li>
+                ))}
+                {/* Restore Mobile Login Button */}
+                <li>
+                  <button
+                    type="button"
+                    className="w-full text-white bg-[var(--orange-color)] hover:bg-[var(--light-orange)] focus:ring-4 focus:outline-none font-medium rounded-lg text-xs px-4 py-2 text-center mt-2"
+                  >
+                    LOGIN
+                  </button>
+                </li>
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Desktop Only Login Button */}
-        <div className="hidden md:flex md:order-2 space-x-3">
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          className="hidden md:flex md:order-2 space-x-3"
+        >
           <button
             type="button"
-            className="text-white bg-[var(--orange-color)] hover:bg-[var(--light-orange)] focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-4 py-2 text-center"
+            className="text-white bg-[var(--orange-color)] hover:bg-[var(--light-orange)] focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-4 py-2 text-center animate-pulse"
           >
             LOGIN
           </button>
-        </div>
+        </motion.div>
       </div>
     </nav>
   );

@@ -19,7 +19,7 @@ export default function Work() {
   );
 
   return (
-    <div className="mt-10">
+    <div className="mt- md:mt-10">
       <h1 className="text-2xl font-bold text-center text-[var(--orange-color)] md:text-5xl">
         Trusted by Companies
       </h1>
