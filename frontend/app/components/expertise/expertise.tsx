@@ -3,7 +3,6 @@
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardDescription,
 } from "@/components/ui/card";
 import { motion, useInView } from "framer-motion";
